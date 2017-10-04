@@ -16,13 +16,16 @@ public class ProcessingFile {
     private ArrayList<Integer> seq = new ArrayList();
     private ArrayList result = new ArrayList();
     private List<List> resultAll = new ArrayList<List>();
+    private ArrayList concatenatedWords = new ArrayList();
 
-    int wordsnumber = 1;
+    final int minWordsNumber = 2;
+    private int wordsnumber = 1;
     private String word;
     private int maxLength = 0;
+    private int secondLongestWordLength = 0;
     private String file = "src/main/resources/words.txt";
     //String file = getClass().getResource("/words.txt").toExternalForm();
-    // String file = ReadFile.class.getResource("/words.txt").toString();
+
 
     private int counter = 0;
     private int concatenatedWordsNumber = 0;
@@ -50,10 +53,11 @@ public class ProcessingFile {
 
     public void findLongestWordsInFile() {
 
-        String longestWord = "";
-        String secondLongestWord = "";
+        List <String> longestWord = new ArrayList<String>();
+        List <String> secondLongestWord = new ArrayList<String>();
+//        String longestWord = "";
+//        String secondLongestWord = "";
         int wordLength = 0;
-        final int minWordsNumber = 2;
         int maxWordsNumber;
 
         BufferedReader br = null;
@@ -72,6 +76,7 @@ public class ProcessingFile {
 
                 for (int i = minWordsNumber; i < maxWordsNumber + 1; i++) {
                     createCombinations(wordLength, i, counter);
+
                 }
 
                 //write length if word is longer and count
@@ -80,14 +85,28 @@ public class ProcessingFile {
 
                     boolean success = checkWord(combination);
                     if (success) {
-                        int l = word.length();
 
-                        if (l > maxLength) {
-                            maxLength = l;
-                            secondLongestWord = longestWord;
-                            longestWord = word;
+                        if (!concatenatedWords.contains(word)) {
+                            concatenatedWords.add(word);
+//                            System.out.println(word);
+
+                            int l = word.length();
+                            if (l > maxLength) {
+                                secondLongestWordLength=maxLength;
+                                maxLength = l;
+                                secondLongestWord.clear();
+                                secondLongestWord.addAll(longestWord);
+                                longestWord.clear();
+                                longestWord.add(word);
+//                                secondLongestWord = longestWord;
+//                                longestWord = word;
+                            } else if (l == maxLength){
+                                longestWord.add(word);
+                            }else if (l == secondLongestWordLength){
+                                secondLongestWord.add(word);
+                            }
+                            concatenatedWordsNumber++;
                         }
-                        concatenatedWordsNumber++;
                     }
                 }
                 resultAll.clear();
@@ -97,8 +116,18 @@ public class ProcessingFile {
         }
 
         System.out.println("Concatenated words number = " + concatenatedWordsNumber);
-        System.out.println("Longest concatenated word is '" + longestWord + "'" + "With length = " + maxLength);
-        System.out.println("Second longest concatenated word is '" + secondLongestWord + "'");
+//        System.out.println("Longest concatenated word is '" + longestWord + "'" + " with length = " + maxLength);
+//        System.out.println("Second longest concatenated word is '" + secondLongestWord + "'");
+
+        System.out.println("Longest concatenated words with length = " + maxLength);
+        for (String str: longestWord){
+            System.out.println(str);
+        }
+
+        System.out.println("Second longest concatenated words with length = " + secondLongestWordLength);
+        for (String str: secondLongestWord){
+            System.out.println(str);
+        }
 
     }
 
@@ -122,17 +151,19 @@ public class ProcessingFile {
         } else {
             for (; counter < seq.size(); ++counter) {
                 result.add(seq.get(counter));
-                createCombinations(wordLength - seq.get(counter), wordsNumber - 1, counter);
+                //createCombinations(wordLength - seq.get(counter), wordsNumber - 1, minWordsNumber);
+                createCombinations(wordLength - seq.get(counter), wordsNumber - 1, 0);
                 result.remove(result.size() - 1);
             }
         }
     }
 
+
+
     void copyResult(ArrayList result) {
         ArrayList temp = new ArrayList(result);
-        resultAll.add(temp);
-
-    }
+            resultAll.add(temp);
+         }
 
 
     //divide word and check if it is concatenated word
@@ -140,7 +171,6 @@ public class ProcessingFile {
         //take combination, divide word on part and check part by part if this part is word from glossary
         int startPoint = 0;
         boolean flag = false;
-        boolean succes = false;
 
         for (Integer point : combination) {
             int endPoint = startPoint + point;
