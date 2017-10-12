@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -12,11 +13,11 @@ import java.util.List;
  */
 public class ProcessingFile {
 
-    private List<String> words = new ArrayList<String>();
+    private HashSet<String> words = new HashSet<String>();
     private ArrayList<Integer> seq = new ArrayList();
     private ArrayList result = new ArrayList();
     private List<List> resultAll = new ArrayList<List>();
-    private ArrayList concatenatedWords = new ArrayList();
+    private HashSet concatenatedWords = new HashSet();
 
     final int minWordsNumber = 2;
     private int wordsnumber = 1;
@@ -30,7 +31,8 @@ public class ProcessingFile {
     private int counter = 0;
     private int concatenatedWordsNumber = 0;
 
-    public List readFile() {
+    //public List readFile() {
+    public HashSet readFile() {
         String s;
 
         BufferedReader br = null;
@@ -151,7 +153,6 @@ public class ProcessingFile {
         } else {
             for (; counter < seq.size(); ++counter) {
                 result.add(seq.get(counter));
-                //createCombinations(wordLength - seq.get(counter), wordsNumber - 1, minWordsNumber);
                 createCombinations(wordLength - seq.get(counter), wordsNumber - 1, 0);
                 result.remove(result.size() - 1);
             }
@@ -170,20 +171,12 @@ public class ProcessingFile {
     boolean checkWord(List<Integer> combination) {
         //take combination, divide word on part and check part by part if this part is word from glossary
         int startPoint = 0;
-        boolean flag = false;
 
         for (Integer point : combination) {
             int endPoint = startPoint + point;
 
-            for (String w : words) {
-                if (word.substring(startPoint, endPoint).equals(w)) {
-                    flag = true;
-                    break;
-                } else {
-                    flag = false;
-                }
-            }
-            if (flag == false) {
+            //optimal search
+            if (!words.contains(word.substring(startPoint, endPoint))){
                 return false;
             }
 
@@ -191,6 +184,4 @@ public class ProcessingFile {
         }
         return true;
     }
-
-
 }
