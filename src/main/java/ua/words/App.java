@@ -1,6 +1,6 @@
 package ua.words;
 
-import ua.words.controller.ProcessingFile;
+import ua.words.controller.ProcessingFile1;
 
 /**
  * Created by Администратор on 18.09.2017.
@@ -8,11 +8,12 @@ import ua.words.controller.ProcessingFile;
 public class App {
     public static void main(String[] args) {
 
-        ProcessingFile processingFile = new ProcessingFile();
+        long start=System.currentTimeMillis();
+        ProcessingFile1 processingFile = new ProcessingFile1();
         processingFile.readFile();
-        processingFile.findLongestWordsInFile();
 
-
+        long end=System.currentTimeMillis();
+        System.out.println("time taken="+(end-start)+" ms");
     }
 
 }
